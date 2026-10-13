@@ -144,17 +144,17 @@ export function Credentials() {
     <Section id="credentials" className="py-20 md:py-28">
       <div className={rail}>
         <h2 className="text-2xl font-medium lg:sticky lg:top-24 lg:self-start">Certificates and badges</h2>
-        <ul className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-8 xl:grid-cols-3">
           {credentials.map((c) => (
             <li key={c.id} className="flex flex-col">
               <div className={`flex aspect-[744/564] items-center justify-center border border-line ${c.kind === "badge" ? "bg-surface" : ""}`}>
                 {c.kind === "badge" ? (
-                  <Image src={c.image} alt={`${c.name} badge, ${c.issuer}`} width={172} height={172} className="size-28 object-contain" />
+                  <Image src={c.image} alt={`${c.name} badge, ${c.issuer}`} width={172} height={172} className="size-[55%] object-contain" />
                 ) : (
-                  <Image src={c.image} alt={`${c.name} certificate of completion, ${c.issuer}`} width={744} height={564} sizes="(min-width: 1280px) 280px, (min-width: 640px) 45vw, 100vw" className="size-full object-cover" />
+                  <Image src={c.image} alt={`${c.name} certificate of completion, ${c.issuer}`} width={744} height={564} sizes="(min-width: 1280px) 280px, (min-width: 640px) 45vw, 50vw" className="size-full object-cover" />
                 )}
               </div>
-              <p className="mt-4 font-medium leading-snug">{c.name}</p>
+              <p className="mt-3 text-[0.9rem] font-medium leading-snug sm:mt-4 sm:text-base">{c.name}</p>
               <p className="label mt-1">{c.issuer} / {c.kind}</p>
               {c.pdf && (
                 <a href={c.pdf} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 self-start text-sm underline underline-offset-4 hover:text-accent">
