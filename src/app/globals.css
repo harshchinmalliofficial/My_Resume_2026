@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0e1011;
+  --surface: #151819;
+  --line: #2a2e30;
+  --fg: #ebe9e3;
+  --muted: #9c9e99;
+  --accent: #f2703d;
+  --accent-ink: #130b07;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #eceeec;
+    --surface: #f6f7f6;
+    --line: #cdd1ce;
+    --fg: #101312;
+    --muted: #4f5450;
+    --accent: #b8430f;
+    --accent-ink: #ffffff;
+    color-scheme: light;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* Right-hand lane for the floating robot between 768px and 1399px, where the page margin is too narrow.
+   Wider screens have a natural gutter; phones dock the robot in the header instead. */
+:root { --lane: 0px; }
+@media (min-width: 768px) and (max-width: 1399px) { :root { --lane: 3.5rem; } }
+@media (min-width: 768px) { .lane { padding-right: calc(2rem + var(--lane)); } }
+
+html { scroll-padding-top: 5rem; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.display { font-weight: 500; letter-spacing: -0.035em; line-height: 1.02; }
+.label { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em; color: var(--muted); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes beat { 0%, 14% { border-color: var(--accent); color: var(--accent); } 20%, 100% { border-color: var(--line); color: var(--muted); } }
+@keyframes beats { 0%, 14% { stroke: var(--accent); } 20%, 100% { stroke: var(--line); } }
+@keyframes beat-b { 0%, 14% { border-color: var(--accent); } 20%, 100% { border-color: var(--line); } }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 90ms); }
+  /* Motivated: shows the direction in which a query travels through the system. */
+  .beat { animation: beat 10s linear infinite; animation-delay: calc(var(--i, 0) * 1.6s); }
+  .beat-s { animation: beats 10s linear infinite; animation-delay: calc(var(--i, 0) * 1.6s); }
+  .beat-box { animation: beat-b 10s linear infinite; animation-delay: calc(var(--i, 0) * 1.6s); }
+  .fadein { animation: fadein 0.35s ease both; }
+}
+
+@keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+.dot { display: inline-block; width: 6px; height: 6px; background: var(--muted); opacity: 0.6; }
+@media (prefers-reduced-motion: no-preference) { .dot { animation: blink 1.2s infinite; animation-delay: calc(var(--i, 0) * 0.18s); } }
