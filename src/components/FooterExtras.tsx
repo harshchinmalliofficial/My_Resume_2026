@@ -7,7 +7,6 @@ import { nextMessage } from "@/lib/personality/messages";
 import { dailyIndex } from "@/lib/personality/select";
 
 const noop = () => () => {};
-const icon = "inline-flex size-11 items-center justify-center text-muted transition-colors hover:text-fg sm:size-9";
 
 // The visitor's own calendar date picks the thought, so it is stable across renders and reloads.
 // The server renders the first thought; the client swaps in today's without a layout shift (fixed min-height).
@@ -28,24 +27,37 @@ export function DailyThought() {
   );
 }
 
-export function FooterButtons() {
+// Tour, developer mode and coffee. Lives in the header (icons on desktop, labelled rows in the mobile menu).
+export function QuickTools({ labelled = false, onDone }: { labelled?: boolean; onDone?: () => void }) {
   const sip = () => {
     const m = nextMessage("coffee", coffee);
     if (!m) return;
     emit({ type: "toast", text: m.text });
     emit({ type: "robot", pose: "celebrate" });
   };
+  const items = [
+    { Icon: Compass, label: "Quick tour", title: "Quick tour", run: () => emit({ type: "tour", mode: "quick" }) },
+    { Icon: Terminal, label: "Developer mode", title: "Developer mode (Ctrl or Cmd + Shift + K)", run: () => emit({ type: "open-console" }) },
+    { Icon: Coffee, label: "Coffee", title: "Coffee", run: sip },
+  ];
   return (
-    <div className="flex items-center">
-      <button type="button" onClick={() => emit({ type: "tour", mode: "quick" })} aria-label="Start the quick tour" title="Quick tour" className={icon}>
-        <Compass size={18} />
-      </button>
-      <button type="button" onClick={() => emit({ type: "open-console" })} aria-label="Open developer mode" title="Developer mode (Ctrl or Cmd + Shift + K)" className={icon}>
-        <Terminal size={18} />
-      </button>
-      <button type="button" onClick={sip} aria-label="Coffee" title="Coffee" className={icon}>
-        <Coffee size={18} />
-      </button>
+    <div className={labelled ? "grid grid-cols-3 gap-2 py-4" : "flex items-center"}>
+      {items.map(({ Icon, label, title, run }) => (
+        <button
+          key={label}
+          type="button"
+          onClick={() => {
+            onDone?.();
+            run();
+          }}
+          aria-label={label}
+          title={title}
+          className={labelled ? "flex h-14 flex-col items-center justify-center gap-1 border border-line text-xs text-muted hover:text-fg" : "inline-flex size-9 items-center justify-center text-muted transition-colors hover:text-fg"}
+        >
+          <Icon size={labelled ? 20 : 18} />
+          {labelled && label}
+        </button>
+      ))}
     </div>
   );
 }

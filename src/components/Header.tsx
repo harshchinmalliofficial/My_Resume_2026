@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { List, X } from "@phosphor-icons/react";
 import { nav, site } from "@/data/site";
+import { QuickTools } from "./FooterExtras";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -12,10 +13,12 @@ export function Header() {
         <Link href="/" className="font-medium tracking-tight" onClick={() => setOpen(false)}>
           {site.name}
         </Link>
-        <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-5 lg:gap-8 md:flex">
           {nav.map((n) => (
             <Link key={n.href} href={n.href} className="text-sm text-muted transition-colors hover:text-fg">{n.label}</Link>
           ))}
+          <span aria-hidden className="h-5 w-px bg-line" />
+          <QuickTools />
         </nav>
         {/* Mobile home of the assistant robot (see RobotAssistant): visible while scrolling, covers no content. */}
         <div id="robot-dock" className="ml-auto mr-1 h-14 md:hidden" />
@@ -34,6 +37,7 @@ export function Header() {
           {nav.map((n) => (
             <Link key={n.href} href={n.href} onClick={() => setOpen(false)} className="block border-b border-line py-4 text-lg last:border-0">{n.label}</Link>
           ))}
+          <QuickTools labelled onDone={() => setOpen(false)} />
         </nav>
       )}
     </header>

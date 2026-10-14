@@ -1,6 +1,6 @@
 import { site } from "@/data/site";
 import { strings } from "@/content/personality";
-import { DailyThought, FooterButtons } from "./FooterExtras";
+import { DailyThought } from "./FooterExtras";
 
 export function Footer() {
   return (
@@ -13,9 +13,8 @@ export function Footer() {
           <a className="hover:text-fg" href={`mailto:${site.email}`}>Email</a>
         </p>
       </div>
-      <div className="lane mx-auto flex max-w-[1280px] flex-col gap-3 border-t border-line px-5 py-5 md:flex-row md:items-center md:justify-between md:px-8">
+      <div className="lane mx-auto flex max-w-[1280px] flex-col gap-3 border-t border-line px-5 py-5 md:px-8">
         <DailyThought />
-        <FooterButtons />
       </div>
     </footer>
   );
