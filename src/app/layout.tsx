@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { site } from "@/data/site";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { PersonalityHost } from "@/components/PersonalityHost";
 import { RobotAssistant } from "@/components/RobotAssistant";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <Footer />
         <RobotAssistant />
+        <PersonalityHost />
       </body>
     </html>
   );

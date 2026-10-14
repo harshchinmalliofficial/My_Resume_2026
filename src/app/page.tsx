@@ -1,5 +1,5 @@
 import { Hero } from "@/components/Hero";
-import { About, Capabilities, Certifications, Contact, Credentials, Experience, Work } from "@/components/Sections";
+import { About, Capabilities, Certifications, Contact, Credentials, Experience, Journey, Work } from "@/components/Sections";
 
 export default function Home() {
   return (
@@ -7,6 +7,7 @@ export default function Home() {
       <Hero />
       <Work />
       <Experience />
+      <Journey />
       <About />
       <Capabilities />
       <Certifications />

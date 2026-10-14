@@ -76,7 +76,15 @@ export const certifications: Cert[] = [
 ];
 
 // Files live in public/certificates (PDF + preview) and public/badges.
-export type Credential = { id: string; name: string; issuer: string; kind: "certificate" | "badge"; image: string; pdf?: string };
+export type Credential = {
+  id: string;
+  name: string;
+  issuer: string;
+  kind: "certificate" | "badge";
+  image: string;
+  pdf?: string;
+  addedOn?: string; // ISO date this was published here; "Recently added" shows for 60 days. Omit when unknown.
+};
 export const credentials: Credential[] = [
   { id: "api", name: "Claude with the Anthropic API", issuer: "Anthropic", kind: "certificate", image: "/certificates/claude-with-the-anthropic-api.webp", pdf: "/certificates/claude-with-the-anthropic-api.pdf" },
   { id: "mcp", name: "Introduction to Model Context Protocol", issuer: "Anthropic", kind: "certificate", image: "/certificates/introduction-to-model-context-protocol.webp", pdf: "/certificates/introduction-to-model-context-protocol.pdf" },

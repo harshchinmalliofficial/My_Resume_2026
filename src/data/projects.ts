@@ -6,6 +6,7 @@ export type Project = {
   slug: string;
   title: string;
   subtitle: string;
+  quip: string; // one-line microcopy; must not state anything the case study does not support
   summary: string;
   tags: string[];
   stack: string[];
@@ -30,6 +31,7 @@ export const projects: Project[] = [
     slug: "mcp-gateway",
     title: "MCP Gateway",
     subtitle: "Secure tool routing and retrieval",
+    quip: "150+ tools. One gateway. A lot of orchestration.",
     summary:
       "A protocol-level proxy between AI agents and 150+ real and simulated MCP tools. It retrieves only the relevant tools per request and gates them with a security policy.",
     tags: ["Agents", "Security", "RAG"],
@@ -81,6 +83,7 @@ export const projects: Project[] = [
     slug: "pdf-intelligence-engine",
     title: "PDF Intelligence Engine",
     subtitle: "Production RAG pipeline",
+    quip: "Turning document chaos into useful context.",
     summary: "An offline-capable document question-answering system with local vector retrieval and context-grounded answers.",
     tags: ["RAG"],
     stack: ["Python", "LangChain", "FAISS", "Embeddings", "Groq / Gemini APIs"],
@@ -120,6 +123,7 @@ export const projects: Project[] = [
     slug: "xeva-ai",
     title: "XEVA AI",
     subtitle: "Agentic LLM platform assistant",
+    quip: "From scattered knowledge to structured learning.",
     summary: "A production RAG assistant grounded in platform knowledge, with multi-step agentic workflows for content, translation, and onboarding.",
     tags: ["RAG", "Agents"],
     stack: ["Azure AI Search", "Azure Cognitive Search", "LLM orchestration", "NLP"],
@@ -154,6 +158,7 @@ export const projects: Project[] = [
     slug: "codeclub",
     title: "CodeClub",
     subtitle: "LLM-powered assessment engine",
+    quip: "Assessments, with a little intelligence behind them.",
     summary: "Generates coding questions, test cases, and rubrics for instructors, with an evaluation harness that checks question quality.",
     tags: ["Evaluation", "Agents"],
     stack: ["Gemini API", "NLP", "Evaluation harnesses"],
@@ -186,6 +191,7 @@ export const projects: Project[] = [
     slug: "cloud-health-dashboard",
     title: "Global Cloud Health Dashboard",
     subtitle: "Operational wallboard for cloud status",
+    quip: "Because \"is it down?\" deserves a better answer.",
     summary: "A real-time wallboard that normalises cloud-provider status feeds into one view with incident history.",
     tags: ["Infra"],
     stack: ["Node.js", "TypeScript", "Express", "PostgreSQL", "SSE"],

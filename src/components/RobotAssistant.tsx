@@ -3,10 +3,14 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ChatPanel, useChat, type ChatEvent } from "./ChatPanel";
+import { RobotBubble } from "./RobotBubble";
 import { RobotView, usePageVisible, useWebGL } from "./RobotView";
 import type { Pose } from "./RobotCanvas";
+import { chatter, rules } from "@/content/personality";
+import { emit, subscribe, type Say } from "@/lib/personality/bus";
+import { firstThisSession, nextMessage, pickGreeting } from "@/lib/personality/messages";
+import { canShow, type ShowState } from "@/lib/personality/select";
 
-const CUE_KEY = "robot-cue-seen";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const noop = () => () => {};
 
@@ -88,13 +92,19 @@ export function RobotAssistant() {
   const [facing, setFacing] = useState<-1 | 0 | 1>(0);
   const [chatPose, setChatPose] = useState<Pose>("idle");
   const [hover, setHover] = useState(false);
-  const [cue, setCue] = useState(false);
+  const [say, setSay] = useState<Say | null>(null);
+  const [modals, setModals] = useState(0); // full-screen overlays (resume, console) hide the robot while open
   const button = useRef<HTMLButtonElement>(null);
   const busy = useRef(false);
   const seq = useRef(0); // invalidates in-flight sequences, so rapid clicks cannot race
   const chatSeq = useRef(0);
   const wasOpen = useRef(false);
   const lastAmbient = useRef("");
+  const chatterState = useRef<ShowState>({ shown: 0, lastAt: null, dismissed: false });
+  const sayTimer = useRef(0);
+  const sayRef = useRef<Say | null>(null);
+  const modalsRef = useRef(0);
+  const openRef = useRef(false);
 
   const timed = useCallback((p: Pose, ms: number, f: -1 | 0 | 1 = 0) => {
     if (busy.current) return; // ambient and cue animations never interrupt a click sequence
@@ -144,37 +154,88 @@ export function RobotAssistant() {
     return () => window.clearTimeout(t);
   }, [reduce, open, visible, timed]);
 
-  // One gentle cue per session, never a popup: the label appears and the robot waves once.
+  // Shows a bubble and clears it on its own. Chatter respects the dismissal for the whole session.
+  const showSay = useCallback((m: Say) => {
+    if (openRef.current || modalsRef.current > 0) return;
+    if (chatterState.current.dismissed && !m.force) return;
+    window.clearTimeout(sayTimer.current);
+    sayRef.current = m;
+    setSay(m);
+    sayTimer.current = window.setTimeout(() => {
+      sayRef.current = null;
+      setSay(null);
+    }, m.actions ? rules.bubbleWithActionsMs : rules.bubbleMs);
+  }, []);
+  const hideSay = useCallback(() => {
+    window.clearTimeout(sayTimer.current);
+    sayRef.current = null;
+    setSay(null);
+  }, []);
+  const dismissSay = useCallback(() => {
+    chatterState.current.dismissed = true;
+    hideSay();
+  }, [hideSay]);
+
+  // One greeting per session from the visitor's own clock, then rare chatter within the display rules.
   useEffect(() => {
-    let seen = false;
-    try {
-      seen = !!sessionStorage.getItem(CUE_KEY);
-    } catch {}
-    if (seen) return;
-    const show = window.setTimeout(() => {
-      try {
-        sessionStorage.setItem(CUE_KEY, "1");
-      } catch {}
-      setCue(true);
-      if (!reduce) timed("wave", 1900);
-    }, 3500);
-    const hide = window.setTimeout(() => setCue(false), 9500);
-    return () => {
-      window.clearTimeout(show);
-      window.clearTimeout(hide);
-    };
-  }, [reduce, timed]);
+    const timers: number[] = [];
+    if (firstThisSession("greeting")) {
+      timers.push(
+        window.setTimeout(() => {
+          const g = pickGreeting();
+          if (g) showSay({ id: g.id, text: g.text });
+          if (!reduce) timed("wave", 1900);
+        }, rules.greetingDelayMs),
+      );
+    }
+    const schedule = (delay: number) =>
+      timers.push(
+        window.setTimeout(() => {
+          const st = chatterState.current;
+          if (canShow(st, rules.chatter, Date.now()) && !sayRef.current && !openRef.current && modalsRef.current === 0 && !document.hidden) {
+            const m = nextMessage("chatter", chatter);
+            if (m) {
+              showSay({ id: m.id, text: m.text, actions: m.actions });
+              st.shown += 1;
+              st.lastAt = Date.now();
+            }
+          }
+          if (st.shown < rules.chatter.max && !st.dismissed) schedule(rules.chatter.minGapMs);
+        }, delay),
+      );
+    schedule(rules.chatter.firstAfterMs);
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, [reduce, timed, showSay]);
+
+  // Other components ask for reactions through the bus; the robot never imports them.
+  useEffect(
+    () =>
+      subscribe((e) => {
+        if (e.type === "modal") {
+          modalsRef.current = Math.max(0, modalsRef.current + (e.open ? 1 : -1));
+          setModals(modalsRef.current);
+          if (e.open) hideSay();
+        }
+        if (e.type === "robot") {
+          if (e.pose && !reduce) timed(e.pose, e.pose === "celebrate" ? 1700 : 1900);
+          if (e.say) showSay(e.say);
+        }
+      }),
+    [reduce, timed, showSay, hideSay],
+  );
 
   const openChat = useCallback(() => {
     const t = ++chatSeq.current;
+    openRef.current = true;
+    hideSay();
     setOpen(true);
     setChatPose("greeting");
     window.setTimeout(() => t === chatSeq.current && setChatPose("idle"), 1900);
-  }, []);
+  }, [hideSay]);
 
   const activate = useCallback(async () => {
     if (open || busy.current) return;
-    setCue(false);
+    hideSay();
     if (reduce || gl !== "ok") return openChat(); // nothing to animate: open at once
     busy.current = true;
     seq.current++; // cancels any pending ambient reset
@@ -190,7 +251,7 @@ export function RobotAssistant() {
     } finally {
       busy.current = false;
     }
-  }, [open, reduce, gl, openChat]);
+  }, [open, reduce, gl, openChat, hideSay]);
 
   // Chat events drive the avatar: thinking while waiting, talking while answering, a thumbs-up on success.
   const onChatEvent = useCallback((e: ChatEvent) => {
@@ -212,6 +273,7 @@ export function RobotAssistant() {
   const chat = useChat(onChatEvent);
 
   const close = useCallback(() => {
+    openRef.current = false;
     chatSeq.current++;
     setOpen(false);
   }, []);
@@ -220,7 +282,7 @@ export function RobotAssistant() {
     pose,
     facing,
     hover,
-    labelShown: cue || hover,
+    labelShown: hover,
     active: !open && !reduce,
     onActivate: activate,
     setHover,
@@ -228,6 +290,13 @@ export function RobotAssistant() {
   };
   const dur = reduce ? 0 : 0.4;
   const enter = (x: number) => ({ initial: reduce ? false : { opacity: 0, x }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0 }, transition: { duration: dur, ease: [0.16, 1, 0.3, 1] as const } });
+
+  const hidden = open || modals > 0;
+  const onAction = (a: "quick-tour" | "deep-dive") => {
+    hideSay();
+    emit({ type: "tour", mode: a === "quick-tour" ? "quick" : "deep" });
+  };
+  const bubble = say && !hidden && <RobotBubble key={say.id} say={say} onDismiss={dismissSay} onAction={onAction} />;
 
   return (
     <>
@@ -239,15 +308,26 @@ export function RobotAssistant() {
           style={{ paddingRight: "env(safe-area-inset-right)" }}
         >
           <AnimatePresence>
-            {!open && (
-              <motion.div key="fab" className="pointer-events-auto" {...enter(70)}>
+            {!hidden && (
+              <motion.div key="fab" className="pointer-events-auto relative" {...enter(70)}>
+                <div className="absolute bottom-full right-0 mb-2">
+                  <AnimatePresence>{bubble}</AnimatePresence>
+                </div>
                 <Companion variant="float" {...props} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       ) : (
-        dock && createPortal(<AnimatePresence>{!open && <motion.div key="dock" data-robot {...enter(0)}><Companion variant="dock" {...props} /></motion.div>}</AnimatePresence>, dock)
+        <>
+          {dock && createPortal(<AnimatePresence>{!hidden && <motion.div key="dock" data-robot {...enter(0)}><Companion variant="dock" {...props} /></motion.div>}</AnimatePresence>, dock)}
+          {body && createPortal(
+            <div className="pointer-events-none fixed inset-x-3 top-[4.25rem] z-[35] flex justify-end">
+              <AnimatePresence>{bubble}</AnimatePresence>
+            </div>,
+            body,
+          )}
+        </>
       )}
       {body && createPortal(<AnimatePresence>{open && <ChatPanel chat={chat} pose={chatPose} active={visible && !reduce} onClose={close} />}</AnimatePresence>, body)}
     </>

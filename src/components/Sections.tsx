@@ -2,6 +2,9 @@ import Image from "next/image";
 import { ArrowUpRight, EnvelopeSimple, GithubLogo, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
 import { capabilities, certifications, credentials, education, experience, spoken } from "@/data/profile";
 import { site } from "@/data/site";
+import { strings } from "@/content/personality";
+import { journey } from "@/content/journey";
+import { CopyButton } from "./CopyButton";
 import { ProjectIndex } from "./ProjectIndex";
 import { Reveal } from "./Reveal";
 
@@ -47,6 +50,37 @@ export function Experience() {
                   {r.points.map((p) => <li key={p} className="max-w-[68ch] leading-relaxed">{p}</li>)}
                 </ul>
               </Reveal>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </Section>
+  );
+}
+
+export function Journey() {
+  return (
+    <Section id="journey" className="py-20 md:py-28">
+      <div className={rail}>
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <h2 className="text-2xl font-medium">Engineering journey</h2>
+          <p className="label mt-2">A path, not a formal career timeline. Dates appear only where the resume gives them.</p>
+        </div>
+        <ol className="relative space-y-10 border-l border-line pl-8">
+          {journey.map((st) => (
+            <li key={st.n} className="relative">
+              <span aria-hidden className="absolute -left-[2.45rem] top-1.5 size-2.5 bg-accent" />
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                <p className="label">{st.n}</p>
+                <h3 className="text-xl font-medium tracking-tight">{st.title}</h3>
+                {st.when && <p className="label">{st.when}</p>}
+              </div>
+              <p className="mt-2 max-w-[62ch] leading-relaxed text-muted">{st.body}</p>
+              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                {st.evidence.map((e) => (
+                  <li key={e.label}>{e.href ? <a href={e.href} className="text-accent underline underline-offset-4">{e.label}</a> : <span className="text-muted">{e.label}</span>}</li>
+                ))}
+              </ul>
             </li>
           ))}
         </ol>
@@ -139,11 +173,17 @@ export function Certifications() {
   );
 }
 
+// Evaluated at build time: the page is static, so "Recently added" updates on the next deploy.
+const BUILT_AT = Date.now();
+
 export function Credentials() {
   return (
     <Section id="credentials" className="py-20 md:py-28">
       <div className={rail}>
-        <h2 className="text-2xl font-medium lg:sticky lg:top-24 lg:self-start">Certificates and badges</h2>
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <h2 className="text-2xl font-medium">Certificates and badges</h2>
+          <p className="label mt-2">{strings.certIntro}</p>
+        </div>
         <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-8 xl:grid-cols-3">
           {credentials.map((c) => (
             <li key={c.id} className="flex flex-col">
@@ -156,6 +196,7 @@ export function Credentials() {
               </div>
               <p className="mt-3 text-[0.9rem] font-medium leading-snug sm:mt-4 sm:text-base">{c.name}</p>
               <p className="label mt-1">{c.issuer} / {c.kind}</p>
+              {c.addedOn && BUILT_AT - Date.parse(c.addedOn) < 60 * 86_400_000 && <p className="label mt-1 !text-accent">Recently added</p>}
               {c.pdf && (
                 <a href={c.pdf} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 self-start text-sm underline underline-offset-4 hover:text-accent">
                   View PDF <ArrowUpRight size={14} />
@@ -180,9 +221,12 @@ export function Contact() {
             <EnvelopeSimple size={18} /> Send email
           </a>
           <a className={link} href={site.linkedin} target="_blank" rel="noreferrer"><LinkedinLogo size={18} /> LinkedIn</a>
-          <a className={link} href={site.github} target="_blank" rel="noreferrer"><GithubLogo size={18} /> GitHub</a>
+          <a className={link} href={site.github} target="_blank" rel="noreferrer" title={strings.githubTip}><GithubLogo size={18} /> GitHub</a>
         </div>
-        <p className="label mt-4 break-all">{site.email}, {site.phone}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <p className="label break-all">{site.email}, {site.phone}</p>
+          <CopyButton value={site.email} label="Copy email address" />
+        </div>
       </div>
       <dl className="space-y-6">
         <div>

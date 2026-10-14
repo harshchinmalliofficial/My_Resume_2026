@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test scripts/test-chat.mjs"
+    "test": "node --test scripts/test-chat.mjs scripts/test-personality.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.29.1",

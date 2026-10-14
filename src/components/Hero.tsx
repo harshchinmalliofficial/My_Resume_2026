@@ -14,7 +14,7 @@ export function Hero() {
   const hasResume = existsSync(join(process.cwd(), "public", site.resumeFile));
   const hasPortrait = existsSync(join(process.cwd(), "public", "images", "harsh-portrait.webp"));
   return (
-    <section className="lane mx-auto max-w-[1280px] px-5 pb-16 pt-10 md:px-8 lg:pb-20 lg:pt-14">
+    <section id="intro" className="lane mx-auto max-w-[1280px] px-5 pb-16 pt-10 md:px-8 lg:pb-20 lg:pt-14">
       <div className="grid items-center gap-10 md:grid-cols-[1.7fr_1fr] md:gap-8 lg:gap-14">
         <div className="min-w-0">
           <h1 className="display rise text-[clamp(2.1rem,1rem+3.6vw,4.4rem)]" style={v(0)}>
@@ -51,7 +51,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="rise mt-14" style={v(3)}>
+      <div id="system-flow" className="rise mt-14" style={v(3)}>
         <HeroFlow />
       </div>
     </section>

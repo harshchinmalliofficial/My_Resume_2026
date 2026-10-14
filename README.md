@@ -33,3 +33,10 @@ Without a key the chat still works: it shows a notice and a clearly labelled sav
 
 ### Safeguards
 Per-visitor limits (5/min, 30/hour by default) and a global daily ceiling (300), all configurable via `CHAT_*` variables. Input is validated (500 chars per message, 8 messages, 16 KB body). Responses are capped at `CHAT_MAX_OUTPUT_TOKENS`. Cross-origin POSTs are rejected. Free-tier quotas and model availability are set by Google and may change; they are not unlimited.
+
+## Personality layer
+
+A sidekick bubble beside the robot (time-aware greeting, rare chatter, all dismissible), project captions, a resume-viewer
+tagline, copy-to-clipboard and footer toasts, an engineering journey section, a daily thought, a simulated read-only
+developer console (Ctrl or Cmd + Shift + K, or the terminal icon in the footer), and a visitor-started quick tour or deep dive.
+Content and rules: `src/content/`. Logic and tests: `src/lib/personality/`. Architecture and CMS path: `docs/CONTENT.md`.

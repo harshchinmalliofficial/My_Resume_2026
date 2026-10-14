@@ -4,6 +4,9 @@ import { createPortal } from "react-dom";
 import { ArrowSquareOut, DownloadSimple, MagnifyingGlassMinus, MagnifyingGlassPlus, ArrowsIn, X } from "@phosphor-icons/react";
 import type { PDFDocumentLoadingTask, PDFDocumentProxy, RenderTask } from "pdfjs-dist";
 import { site } from "@/data/site";
+import { resumeViewer } from "@/content/personality";
+import { emit } from "@/lib/personality/bus";
+import { nextMessage } from "@/lib/personality/messages";
 
 type Status = "loading" | "ready" | "error";
 const MIN = 0.5;
@@ -24,6 +27,13 @@ export default function ResumeViewer({ src, downloadName, onClose }: { src: stri
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [zoom, setZoom] = useState(1);
   const [width, setWidth] = useState(0);
+  const [tip] = useState(() => nextMessage("resume-viewer", resumeViewer)?.text ?? "");
+
+  // Tell the rest of the site a full-screen overlay is open (the robot steps aside).
+  useEffect(() => {
+    emit({ type: "modal", id: "resume", open: true });
+    return () => emit({ type: "modal", id: "resume", open: false });
+  }, []);
 
   // Escape closes (before other handlers such as the chat panel), Tab stays inside the dialog.
   useEffect(() => {
@@ -162,6 +172,8 @@ export default function ResumeViewer({ src, downloadName, onClose }: { src: stri
             </button>
           </div>
         </header>
+
+        {tip && <p className="label truncate border-b border-line px-4 py-1.5">{tip}</p>}
 
         <div role="toolbar" aria-label="Resume view controls" className="flex items-center justify-between gap-2 border-b border-line px-4 py-2">
           <div className="flex items-center gap-2">
