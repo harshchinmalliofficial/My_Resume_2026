@@ -13,7 +13,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: `${site.name} | LLM Systems, RAG & Agentic Workflows`, template: `%s | ${site.name}` },
   description: site.description,
-  openGraph: { title: site.name, description: site.description, type: "website", siteName: site.name },
+  alternates: { canonical: "/" },
+  openGraph: { title: site.name, description: site.description, type: "website", siteName: site.name, url: "/" },
   twitter: { card: "summary_large_image" },
 };
 export const viewport: Viewport = {

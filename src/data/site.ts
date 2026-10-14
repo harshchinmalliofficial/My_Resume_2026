@@ -7,10 +7,11 @@ export const site = {
   phone: "+91-8123123872",
   linkedin: "https://www.linkedin.com/in/harsh-chinmalli-1242b42b6/",
   github: "https://github.com/harshchinmalliofficial",
-  // Set NEXT_PUBLIC_SITE_URL in Vercel once the domain is known.
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  // Drop your PDF at public/resume.pdf; the CTA links to it automatically.
-  resumeFile: "/resume.pdf",
+  // Canonical URL. NEXT_PUBLIC_SITE_URL can override it (it is a public value, never a secret).
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://harshchinmalli2026.vercel.app",
+  // Exact on-disk path under public/ (the folder is "Resume", capitalised; Linux hosts are case-sensitive).
+  resumeFile: "/Resume/Harsh_Chinmalli_Resume (1).pdf",
+  resumeDownloadName: "Harsh_Chinmalli_Resume.pdf",
   description:
     "Software engineer building LLM systems, RAG pipelines, agentic workflows, and MCP infrastructure with a focus on reliability, evaluation, and security.",
 } as const;

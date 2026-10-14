@@ -12,7 +12,7 @@ export const generateStaticParams = () => projects.map((p) => ({ slug: p.slug })
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = getProject((await params).slug);
-  return p ? { title: p.title, description: p.summary, openGraph: { title: p.title, description: p.summary } } : {};
+  return p ? { title: p.title, description: p.summary, alternates: { canonical: `/projects/${p.slug}` }, openGraph: { title: p.title, description: p.summary, url: `/projects/${p.slug}` } } : {};
 }
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {

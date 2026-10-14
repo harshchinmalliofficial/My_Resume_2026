@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDownRight, FileText } from "@phosphor-icons/react/dist/ssr";
+import { ArrowDownRight } from "@phosphor-icons/react/dist/ssr";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { site } from "@/data/site";
 import { HeroFlow } from "./HeroFlow";
+import { ResumeButton } from "./ResumeButton";
 
 const v = (i: number) => ({ "--i": i }) as React.CSSProperties;
 
@@ -26,13 +27,7 @@ export function Hero() {
             <Link href="/#work" className="inline-flex items-center gap-2 whitespace-nowrap bg-accent px-5 py-3 font-medium text-accent-ink transition-transform hover:-translate-y-px active:translate-y-px">
               Explore My Work <ArrowDownRight size={18} />
             </Link>
-            <a
-              href={hasResume ? site.resumeFile : "/#experience"}
-              {...(hasResume ? { target: "_blank", rel: "noreferrer" } : {})}
-              className="inline-flex items-center gap-2 whitespace-nowrap border border-fg/40 px-5 py-3 font-medium transition-colors hover:border-fg"
-            >
-              <FileText size={18} /> View Resume
-            </a>
+            <ResumeButton src={hasResume ? encodeURI(site.resumeFile) : null} fallbackHref="/#experience" />
           </div>
         </div>
 
