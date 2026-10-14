@@ -69,7 +69,7 @@ export default function GuidedTour({ mode, onExit }: { mode: "quick" | "deep"; o
       aria-modal="false"
       aria-labelledby="tour-title"
       tabIndex={-1}
-      className="fadein fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[45] border border-line bg-surface p-4 shadow-[0_8px_32px_rgb(0_0_0/0.4)] outline-none sm:inset-x-auto sm:bottom-4 sm:left-4 sm:w-[24rem] md:left-8"
+      className="fadein fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[45] max-h-[60dvh] overflow-y-auto border border-line bg-surface p-4 shadow-[0_8px_32px_rgb(0_0_0/0.4)] outline-none sm:inset-x-auto sm:bottom-4 sm:left-4 sm:w-[24rem] md:left-8"
     >
       <div className="flex items-start justify-between gap-3">
         <p className="label uppercase !text-accent">{tour.name} · {step + 1} of {steps.length}</p>

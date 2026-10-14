@@ -52,7 +52,7 @@ export function PersonalityHost() {
     <>
       {console_ && <DevConsole onClose={closeConsole} />}
       {tour && <GuidedTour mode={tour} onExit={exitTour} />}
-      <div className={`pointer-events-none fixed inset-x-3 z-[65] flex flex-col items-center gap-2 sm:items-start md:left-8 md:right-auto ${tour ? "bottom-72 sm:bottom-80" : "bottom-[max(0.75rem,env(safe-area-inset-bottom))]"}`}>
+      <div className={`pointer-events-none fixed inset-x-3 z-[65] flex flex-col items-center gap-2 sm:items-start md:left-8 md:right-auto ${tour ? "top-[4.5rem]" : "bottom-[max(0.75rem,env(safe-area-inset-bottom))]"}`}>
         {toasts.map((t) => (
           <div
             key={t.id}
