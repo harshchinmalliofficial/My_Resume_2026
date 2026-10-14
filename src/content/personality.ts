@@ -17,13 +17,48 @@ export const greetings = {
   returning: pool("gr", ["Welcome back. Same engineer, same robot, possibly new details.", "Good to see you again. The case studies go deeper than the homepage."]),
 };
 
-// The line above the hero headline. Generic on purpose: the site never claims to know who is visiting.
+// The line above the hero headline. Words between *asterisks* render in the orange script accent.
+// Generic on purpose: the site never claims to know who is visiting, only what time it is on their clock.
 export const heroWish = {
-  morning: "Good morning. Welcome in.",
-  afternoon: "Good afternoon. Welcome in.",
-  evening: "Good evening. Welcome in.",
-  night: "Night owl hours. Welcome in.",
-} as const;
+  morning: [
+    "Good *morning*. Welcome in.",
+    "Rise and *shine*. Coffee optional.",
+    "Fresh *coffee*, fresh ideas. Come on in.",
+    "Morning. Let's look at something *useful*.",
+    "A *bright* start to the day. Welcome in.",
+  ],
+  afternoon: [
+    "Good *afternoon*. Welcome in.",
+    "Afternoon *break*? Stay a while.",
+    "Hope the day is going *smoothly*.",
+    "A mid-day *detour*. Good choice.",
+    "A perfect time for a *quick* tour.",
+  ],
+  evening: [
+    "Good *evening*. Welcome in.",
+    "Evening *mode*: on.",
+    "Winding down or *warming up*? Welcome either way.",
+    "The *golden* hour of side projects.",
+  ],
+  night: [
+    "Still up? Welcome, *night owl*.",
+    "*Night owl* hours. Welcome in.",
+    "Burning the *midnight* oil? Pull up a chair.",
+    "The quiet hours are good for *big* ideas.",
+  ],
+  returning: [
+    "Welcome *back*.",
+    "Good to see you *again*.",
+    "Back for *more*? Excellent taste.",
+  ],
+  // Added to the pool on these weekdays (0 = Sunday).
+  weekday: {
+    1: ["Happy *Monday*. Gently, now."],
+    5: ["Happy *Friday*. Please do not deploy."],
+    6: ["Happy *weekend*. Side projects welcome."],
+    0: ["Happy *weekend*. Side projects welcome."],
+  } as Record<number, string[]>,
+};
 
 // Occasional robot chatter, shown after the greeting within the limits in `rules`.
 export const chatter = pool("rc", [

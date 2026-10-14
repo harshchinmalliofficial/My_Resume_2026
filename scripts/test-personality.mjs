@@ -1,7 +1,7 @@
 // Run: npm test  (node:test + native TypeScript stripping)
 import test from "node:test";
 import assert from "node:assert/strict";
-import { dayPeriod, pickMessage, canShow, dailyIndex } from "../src/lib/personality/select.ts";
+import { dayPeriod, pickMessage, canShow, dailyIndex, wishPool, parseAccent } from "../src/lib/personality/select.ts";
 import { parseCommand, suggest, COMMANDS } from "../src/lib/personality/commands.ts";
 import * as content from "../src/content/personality.ts";
 
@@ -86,5 +86,25 @@ test("content: pools are non-empty, ids unique, and no em or en dashes in visibl
       assert.ok(!/[–—]/.test(m.text), m.text);
     }
   }
+  const wishes = [...Object.entries(content.heroWish).flatMap(([k, v]) => (k === "weekday" ? Object.values(v).flat() : v))];
+  for (const w of wishes) {
+    assert.ok(!/[\u2013\u2014]/.test(w), w);
+    assert.ok(parseAccent(w).some((s) => s.accent), `every wish has an accent word: ${w}`);
+    assert.equal((w.match(/\*/g) ?? []).length % 2, 0, `balanced markers: ${w}`);
+  }
   for (const t of [...content.thoughts, ...Object.values(content.strings)]) assert.ok(!/[–—]/.test(t), t);
+});
+
+test("wishPool combines the period, returning-visitor and weekday lines", () => {
+  const src = { morning: ["m"], afternoon: ["a"], evening: ["e"], night: ["n"], returning: ["r"], weekday: { 5: ["fri"] } };
+  assert.deepEqual(wishPool(src, "morning", 2, false), ["m"]);
+  assert.deepEqual(wishPool(src, "night", 5, true), ["n", "r", "fri"]);
+});
+
+test("parseAccent marks starred words and drops empty segments", () => {
+  assert.deepEqual(parseAccent("Good *morning*. Welcome in."), [
+    { text: "Good ", accent: false }, { text: "morning", accent: true }, { text: ". Welcome in.", accent: false },
+  ]);
+  assert.deepEqual(parseAccent("*Night owl* hours."), [{ text: "Night owl", accent: true }, { text: " hours.", accent: false }]);
+  assert.deepEqual(parseAccent("plain"), [{ text: "plain", accent: false }]);
 });

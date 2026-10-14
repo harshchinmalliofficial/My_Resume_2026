@@ -47,3 +47,24 @@ export function dailyIndex(year: number, month: number, day: number, length: num
   if (length <= 0) return 0;
   return Math.floor(Date.UTC(year, month, day) / 86_400_000) % length;
 }
+
+/**
+ * Builds the pool for the hero line: the period's lines, plus returning-visitor lines, plus any weekday extras.
+ * `weekday` is the visitor's local day (0 = Sunday).
+ */
+export function wishPool(
+  src: Record<Period, readonly string[]> & { returning: readonly string[]; weekday: Record<number, readonly string[]> },
+  period: Period,
+  weekday: number,
+  returning: boolean,
+): string[] {
+  return [...src[period], ...(returning ? src.returning : []), ...(src.weekday[weekday] ?? [])];
+}
+
+/** Splits "Good *morning*." into segments; segments at odd positions are the accent words. */
+export function parseAccent(text: string): { text: string; accent: boolean }[] {
+  return text
+    .split("*")
+    .map((t, i) => ({ text: t, accent: i % 2 === 1 }))
+    .filter((s) => s.text.length > 0);
+}

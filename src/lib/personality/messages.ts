@@ -1,7 +1,7 @@
 // Browser-side message selection with session memory. Storage holds only message ids and booleans
 // (no identifiers, no page history) and every access is wrapped, so private modes simply behave statelessly.
-import { greetings, type Msg } from "@/content/personality";
-import { dayPeriod, pickMessage } from "./select";
+import { greetings, heroWish, type Msg } from "@/content/personality";
+import { dayPeriod, pickMessage, wishPool, type Period } from "./select";
 
 const S = (): Storage | null => {
   try {
@@ -62,4 +62,29 @@ export function firstThisSession(key: string): boolean {
     s.setItem(`psn:once:${key}`, "1");
   } catch {}
   return true;
+}
+
+/**
+ * The hero line for this session. Chosen once per session and period (so every read returns the same text and
+ * the line never flickers), from the visitor's own clock. Falls back to a stateless pick when storage is blocked.
+ */
+let memo: { key: string; text: string } | null = null;
+export function heroWishFor(period: Period, now: Date): string {
+  const key = `${period}|${now.getDay()}`;
+  if (memo?.key === key) return memo.text;
+  const s = S();
+  let text: string | null = null;
+  try {
+    const saved = JSON.parse(s?.getItem("psn:wish") ?? "null");
+    if (saved?.key === key && typeof saved.text === "string") text = saved.text;
+  } catch {}
+  if (!text) {
+    const pool = wishPool(heroWish, period, now.getDay(), isReturningVisitor());
+    text = pool[Math.floor(Math.random() * pool.length)];
+    try {
+      s?.setItem("psn:wish", JSON.stringify({ key, text }));
+    } catch {}
+  }
+  memo = { key, text };
+  return text;
 }
