@@ -5,6 +5,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { site } from "@/data/site";
 import { HeroFlow } from "./HeroFlow";
+import { HeroWish } from "./HeroWish";
 import { ResumeButton } from "./ResumeButton";
 
 const v = (i: number) => ({ "--i": i }) as React.CSSProperties;
@@ -17,6 +18,7 @@ export function Hero() {
     <section id="intro" className="lane mx-auto max-w-[1280px] px-5 pb-16 pt-10 md:px-8 lg:pb-20 lg:pt-14">
       <div className="grid items-center gap-10 md:grid-cols-[1.7fr_1fr] md:gap-8 lg:gap-14">
         <div className="min-w-0">
+          <HeroWish />
           <h1 className="display rise text-[clamp(2.1rem,1rem+3.6vw,4.4rem)]" style={v(0)}>
             I build AI systems that reason, retrieve, and <span className="text-accent">act.</span>
           </h1>

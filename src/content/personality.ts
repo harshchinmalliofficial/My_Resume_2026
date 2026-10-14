@@ -17,6 +17,14 @@ export const greetings = {
   returning: pool("gr", ["Welcome back. Same engineer, same robot, possibly new details.", "Good to see you again. The case studies go deeper than the homepage."]),
 };
 
+// The line above the hero headline. Generic on purpose: the site never claims to know who is visiting.
+export const heroWish = {
+  morning: "Good morning. Welcome in.",
+  afternoon: "Good afternoon. Welcome in.",
+  evening: "Good evening. Welcome in.",
+  night: "Night owl hours. Welcome in.",
+} as const;
+
 // Occasional robot chatter, shown after the greeting within the limits in `rules`.
 export const chatter = pool("rc", [
   "Hey, I'm Harsh's digital sidekick. He's the engineer; I'm the unsolicited tour guide. 🤖",
